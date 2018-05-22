@@ -20,4 +20,6 @@ executable music-review-scraper
   build-depends:       base >= 4.7 && < 5
                      , wreq
                      , lens
-                     , bytestring 
+                     , bytestring
+                     , text
+                     , scalpel
