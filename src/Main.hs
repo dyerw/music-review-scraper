@@ -11,16 +11,19 @@ type AlbumName = String
 type ArtistName = String
 data AlbumReview = AlbumReview ArtistName AlbumName deriving (Show, Eq)
 
+pitchforkURL :: String
+pitchforkURL = "https://pitchfork.com/reviews/albums/"
+
 allPitchforkReviews :: IO (Maybe [AlbumReview])
-allPitchforkReviews = scrapeURL "https://pitchfork.com/reviews/albums/" reviews
+allPitchforkReviews = scrapeURL pitchforkURL reviews
   where
     reviews :: Scraper String [AlbumReview]
-    reviews = chroots ("div" @: [hasClass "review"]) review
+    reviews = chroots (("div" @: [hasClass "review"]) // ("a" @: [hasClass "review__link"])) review
 
     review :: Scraper String AlbumReview
     review = do
-      artistName <- text "li"
-      albumName <- text $ "div" @: [hasClass "review__title-album"]
+      artistName <- text $ ("div" @: [hasClass "review__title"]) // ("ul" @: [hasClass "artist-list"]) // "li"
+      albumName  <- text $ ("div" @: [hasClass "review__title"]) // "h2"
       return $ AlbumReview artistName albumName
 
 getPitchforkAlbumReviewsPage :: IO SL.ByteString
